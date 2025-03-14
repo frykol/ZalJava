@@ -4,26 +4,36 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c925840a-bcb7-46f2-8747-02ff2a9d6f49" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/ZalJava/Main.java" afterDir="false" />
+    <list default="true" id="c925840a-bcb7-46f2-8747-02ff2a9d6f49" name="Changes" comment="Added basic 3d render">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/ZalJava/Shader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/ZalJava/Texture.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/ZalJava/VAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/ZalJava/VBO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/ZalJava/Window.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/ball.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/brick.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/ZalJava/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/ZalJava/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2uE0LwapxCnWhC9zUaN2ZuXIkLF" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -39,15 +49,22 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Frykol/Desktop/learn/ZalJava/src/main/resources",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "onboarding.tips.debug.path": "C:/Users/Frykol/Desktop/learn/ZalJava/src/main/java/org/example/Main.java",
+    "settings.editor.selected.configurable": "preferences.editor",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Frykol\Desktop\learn\ZalJava\src\main\resources" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -64,11 +81,44 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1741798376015</updated>
-      <workItem from="1741798377128" duration="2384000" />
+      <workItem from="1741798377128" duration="5421000" />
+      <workItem from="1741960444220" duration="175000" />
+      <workItem from="1741971943220" duration="16520000" />
     </task>
+    <task id="LOCAL-00001" summary="Started Project">
+      <option name="closed" value="true" />
+      <created>1741800794669</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1741800794669</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Started Project" />
+    <MESSAGE value="Added basic 3d render" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added basic 3d render" />
   </component>
 </project>

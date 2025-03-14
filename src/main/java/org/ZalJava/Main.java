@@ -1,25 +1,29 @@
 package org.ZalJava;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
 
-import java.nio.*;
 
-import static org.lwjgl.glfw.Callbacks.*;
+import java.util.ArrayList;
+
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
+
+
 
 public class Main {
 
-    // The window handle
-    private long window;
-    private FloatBuffer buf;
-    private int vao;
-    private int vbo;
+
+    private Window window;
+
+    private final ArrayList<VAO> vaos = new ArrayList<>();
+    private Shader shader;
+    private Texture texture;
+
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -27,113 +31,122 @@ public class Main {
         init();
         loop();
 
-        // Free the window callbacks and destroy the window
-        glfwFreeCallbacks(window);
-        glfwDestroyWindow(window);
+        window.destroyWindow();
 
-        // Terminate GLFW and free the error callback
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
 
     private void init() {
-        // Setup an error callback. The default implementation
-        // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
 
-        // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if ( !glfwInit() )
-            throw new IllegalStateException("Unable to initialize GLFW");
+        window = new Window(1280, 720);
+        window.init();
 
-        // Configure GLFW
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-        // Create the window
-        window = glfwCreateWindow(1280, 720, "Hello World!", NULL, NULL);
-        if ( window == NULL )
-            throw new RuntimeException("Failed to create the GLFW window");
-
-
-
-        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-        });
-
-        // Get the thread stack and push a new frame
-        try ( MemoryStack stack = stackPush() ) {
-            IntBuffer pWidth = stack.mallocInt(1); // int*
-            IntBuffer pHeight = stack.mallocInt(1); // int*
-
-            // Get the window size passed to glfwCreateWindow
-            glfwGetWindowSize(window, pWidth, pHeight);
-
-            // Get the resolution of the primary monitor
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            // Center the window
-            glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
-        } // the stack frame is popped automatically
-
-        // Make the OpenGL context current
-        glfwMakeContextCurrent(window);
-        // Enable v-sync
-        glfwSwapInterval(1);
-
-        // Make the window visible
-        glfwShowWindow(window);
-
-        GL.createCapabilities();
-
-        vao = GL30.glGenVertexArrays();
-        GL30.glBindVertexArray(vao);
-
-        vbo = GL15.glGenBuffers();
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 
         float[] data = {
-                -0.5f , -0.5f,
-                0.5f , -0.5f,
-                0.0f , 0.5f};
-        buf = BufferUtils.createFloatBuffer(data.length);
-        buf.put(data);
-        buf.flip();
+                -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
+                1.0f, -1.0f,  1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
+                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
+                -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
+                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
+                -1.0f,  1.0f,  1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
 
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buf, GL15.GL_STATIC_DRAW);
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 0, 0);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL30.glBindVertexArray(0);
+                // Tylna ściana (-z)
+                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
+                -1.0f,  1.0f, -1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
+                1.0f,  1.0f, -1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
+                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
+                1.0f,  1.0f, -1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
+                1.0f, -1.0f, -1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
+
+                // Lewa ściana (-x)
+                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
+                -1.0f, -1.0f,  1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
+                -1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
+                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
+                -1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
+                -1.0f,  1.0f, -1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
+
+                // Prawa ściana (x)
+                1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
+                1.0f,  1.0f, -1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
+                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
+                1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
+                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
+                1.0f, -1.0f,  1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
+
+                // Górna ściana (y)
+                -1.0f,  1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
+                -1.0f,  1.0f,  1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
+                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
+                -1.0f,  1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
+                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
+                1.0f,  1.0f, -1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
+
+                // Dolna ściana (-y)
+                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
+                1.0f, -1.0f, -1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
+                1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
+                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
+                1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
+                -1.0f, -1.0f,  1.0f,  0.0f, 1.0f
+        };
+
+        VBO vbo = new VBO(data);
+        vbo.addAttribute(3);
+        vbo.addAttribute(2);
+        try {
+            VAO vao = new VAO(vbo);
+            System.out.println(vao.getVertesies());
+            vaos.add(vao);
+        }
+        catch (RuntimeException e){
+            System.err.println("Error creating VAO");
+        }
+
+        shader = new Shader("basic.vertex", "basic.fragment");
+        shader.compileProgram();
+
+        float FOV = (float) Math.toRadians(60.0f);
+        Matrix4f projMatrix = new Matrix4f();
+        projMatrix.setPerspective(FOV, (float)1280/720, 0.01f, 1000.0f);
+        shader.bind();
+        shader.setUniformMatrix4f("u_Projection", projMatrix);
+
+
+
+
+        Matrix4f viewMatrix = new Matrix4f();
+        viewMatrix.identity();
+        viewMatrix.translate(new Vector3f(0.0f,0.0f,-10.0f));
+        shader.setUniformMatrix4f("u_View", viewMatrix);
+
+        texture = new Texture("brick.jpg");
+        texture.compileTexture();
     }
 
     private void loop() {
-        // This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
+        Matrix4f modelMatrix = new Matrix4f();
+        modelMatrix.identity();
 
 
-        // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+        modelMatrix.translate(new Vector3f(-6.0f, 2.0f, 0.0f));
 
-        // Run the rendering loop until the user has attempted to close
-        // the window or has pressed the ESCAPE key.
-        while ( !glfwWindowShouldClose(window) ) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            GL30.glBindVertexArray(vao);
-            GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
+        while ( !glfwWindowShouldClose(window.getWindow()) ) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            texture.bind();
+            modelMatrix.rotate(0.05f * (float) Math.toRadians(10.0f), new Vector3f(1.0f,0.5f,0.0f));
+            shader.setUniform3f("u_Color", 1.0f, 0.3f, 0.3f);
+            shader.setUniformMatrix4f("u_Model", modelMatrix);
+            for (VAO vao : vaos) {
+                vao.bind();
+                GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, vao.getVertesies());
+            }
 
-            glfwSwapBuffers(window); // swap the color buffers
 
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
+            glfwSwapBuffers(window.getWindow());
             glfwPollEvents();
         }
     }
