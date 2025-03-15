@@ -1,10 +1,11 @@
 package org.ZalJava;
 
+import org.ZalJava.core.*;
+import org.ZalJava.scene.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
 
 
 import java.util.ArrayList;
@@ -19,11 +20,9 @@ public class Main {
 
 
     private Window window;
-
-    private final ArrayList<VAO> vaos = new ArrayList<>();
+    private Scene scene;
     private Shader shader;
-    private Texture texture;
-
+    private Renderer renderer;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -43,67 +42,8 @@ public class Main {
         window = new Window(1280, 720);
         window.init();
 
-
-        float[] data = {
-                -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
-                1.0f, -1.0f,  1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
-                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
-                -1.0f, -1.0f,  1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
-                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
-                -1.0f,  1.0f,  1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
-
-                // Tylna ściana (-z)
-                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
-                -1.0f,  1.0f, -1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
-                1.0f,  1.0f, -1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
-                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
-                1.0f,  1.0f, -1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
-                1.0f, -1.0f, -1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
-
-                // Lewa ściana (-x)
-                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
-                -1.0f, -1.0f,  1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
-                -1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
-                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
-                -1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
-                -1.0f,  1.0f, -1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
-
-                // Prawa ściana (x)
-                1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
-                1.0f,  1.0f, -1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
-                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
-                1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
-                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
-                1.0f, -1.0f,  1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
-
-                // Górna ściana (y)
-                -1.0f,  1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
-                -1.0f,  1.0f,  1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
-                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
-                -1.0f,  1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
-                1.0f,  1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
-                1.0f,  1.0f, -1.0f,  0.0f, 1.0f,  // Wierzchołek 6 (x, y, z, u, v)
-
-                // Dolna ściana (-y)
-                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 1 (x, y, z, u, v)
-                1.0f, -1.0f, -1.0f,  1.0f, 0.0f,  // Wierzchołek 2 (x, y, z, u, v)
-                1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 3 (x, y, z, u, v)
-                -1.0f, -1.0f, -1.0f,  0.0f, 0.0f,  // Wierzchołek 4 (x, y, z, u, v)
-                1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  // Wierzchołek 5 (x, y, z, u, v)
-                -1.0f, -1.0f,  1.0f,  0.0f, 1.0f
-        };
-
-        VBO vbo = new VBO(data);
-        vbo.addAttribute(3);
-        vbo.addAttribute(2);
-        try {
-            VAO vao = new VAO(vbo);
-            System.out.println(vao.getVertesies());
-            vaos.add(vao);
-        }
-        catch (RuntimeException e){
-            System.err.println("Error creating VAO");
-        }
+        ResourceManager.addTexture("brick", "brick.jpg");
+        ResourceManager.addTexture("ball", "ball.jpg");
 
         shader = new Shader("basic.vertex", "basic.fragment");
         shader.compileProgram();
@@ -115,39 +55,51 @@ public class Main {
         shader.setUniformMatrix4f("u_Projection", projMatrix);
 
 
+        renderer = new Renderer(shader);
 
+        scene = new Scene();
+        new Cube(scene, ResourceManager.getTexture("ball"),new Vector3f(0.0f,0.0f,0.0f), null);
 
-        Matrix4f viewMatrix = new Matrix4f();
-        viewMatrix.identity();
-        viewMatrix.translate(new Vector3f(0.0f,0.0f,-10.0f));
-        shader.setUniformMatrix4f("u_View", viewMatrix);
-
-        texture = new Texture("brick.jpg");
-        texture.compileTexture();
+        for(int i = 0; i<10; i++){
+            new Cube(scene, ResourceManager.getTexture("brick"), new Vector3f((float)Math.random() * 10,(float)Math.random() * 10,(float)Math.random() * 10), null);
+        }
     }
 
     private void loop() {
-        Matrix4f modelMatrix = new Matrix4f();
-        modelMatrix.identity();
-
-
-        modelMatrix.translate(new Vector3f(-6.0f, 2.0f, 0.0f));
-
+        float maxFPS = 1.0f/60.0f;
+        float lastFrame = (float)glfwGetTime();
+        float currentTime;
+        float deltaTime = 0.0f;
+        Player p = new Player(scene, new Vector3f(0.0f,0.0f,-10.0f));
 
         while ( !glfwWindowShouldClose(window.getWindow()) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            texture.bind();
-            modelMatrix.rotate(0.05f * (float) Math.toRadians(10.0f), new Vector3f(1.0f,0.5f,0.0f));
-            shader.setUniform3f("u_Color", 1.0f, 0.3f, 0.3f);
-            shader.setUniformMatrix4f("u_Model", modelMatrix);
-            for (VAO vao : vaos) {
-                vao.bind();
-                GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, vao.getVertesies());
+
+            currentTime = (float)glfwGetTime();
+            deltaTime += (currentTime - lastFrame)/maxFPS;
+            lastFrame = currentTime;
+
+            if(deltaTime >= 1.0f) {
+                for(Entity entity : scene.getEntities()) {
+                    //entity.scale((float) Math.sin(glfwGetTime()) * 0.5f + 1.0f);
+                    entity.rotate(new Vector3f(1.0f, 0.5f, 0.0f));
+                }
+
+                //camera.update(window);
+                p.update(window, scene);
+                shader.bind();
+                shader.setUniformMatrix4f("u_View", p.getCamera().getViewMatrix());
+                deltaTime--;
+            }
+            for(Entity entity : scene.getEntities()) {
+                renderer.renderEntity(entity);
             }
 
 
             glfwSwapBuffers(window.getWindow());
             glfwPollEvents();
+
+
         }
     }
 

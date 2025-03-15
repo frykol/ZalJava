@@ -1,5 +1,6 @@
-package org.ZalJava;
+package org.ZalJava.core;
 
+import org.ZalJava.Main;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
@@ -21,7 +22,7 @@ public class Texture {
 
     private int status = 0;
 
-    Texture(String textureName){
+    public Texture(String textureName){
         this.textureName = textureName;
     }
 

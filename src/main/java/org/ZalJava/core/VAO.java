@@ -1,4 +1,4 @@
-package org.ZalJava;
+package org.ZalJava.core;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -10,7 +10,7 @@ public class VAO {
     private int ID;
     private int vertesies;
 
-    VAO(VBO vbo){
+    public VAO(VBO vbo){
         vbo.check();
         createVAO(vbo);
     }

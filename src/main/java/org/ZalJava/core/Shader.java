@@ -1,5 +1,6 @@
-package org.ZalJava;
+package org.ZalJava.core;
 
+import org.ZalJava.Main;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -20,7 +21,7 @@ public class Shader {
     private final String vertexShader;
     private final String fragmentShader;
 
-    Shader(String vertexFile, String fragmentFile) {
+    public Shader(String vertexFile, String fragmentFile) {
         this.vertexShader = vertexFile;
         this.fragmentShader = fragmentFile;
     }
@@ -85,7 +86,7 @@ public class Shader {
         GL30.glUniformMatrix4fv(GL30.glGetUniformLocation(shaderProgram, name), false, f);
     }
 
-    void bind(){
+    public void bind(){
         if(statusCode != 1){
             System.err.println("Cannot bind program");
             return;

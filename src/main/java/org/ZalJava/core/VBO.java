@@ -1,4 +1,4 @@
-package org.ZalJava;
+package org.ZalJava.core;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
@@ -15,7 +15,7 @@ public class VBO {
     public static final int SIZE_OF_FLOAT = 4;
 
 
-    VBO(float[] data){
+    public VBO(float[] data){
         createBuffer(data);
     }
     private void createBuffer(float[] data){

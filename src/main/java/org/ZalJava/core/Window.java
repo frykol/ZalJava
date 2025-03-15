@@ -1,4 +1,4 @@
-package org.ZalJava;
+package org.ZalJava.core;
 
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -17,7 +17,11 @@ public class Window {
     private long window;
     private int width, height;
 
-    Window(int width, int height) {
+    private Input input;
+
+    private double mouseX, mouseY;
+
+    public Window(int width, int height) {
         this.width = width;
         this.height = height;
     }
@@ -39,12 +43,17 @@ public class Window {
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
+        input = new Input();
 
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+            input.setKey(key, action);
+        });
+
+        glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
+                this.mouseX = xpos;
+                this.mouseY = ypos;
         });
 
         try ( MemoryStack stack = stackPush() ) {
@@ -95,8 +104,21 @@ public class Window {
     public int getHeight() {
         return height;
     }
+    public double getMouseX(){
+        return mouseX;
+    }
+    public double getMouseY(){
+        return mouseY;
+    }
+
     public void setWindow(int width, int height) {
         this.width = width;
         this.height = height;
+    }
+    public boolean isKeyPressed(int keyCode){
+        return input.isKeyPressed(keyCode);
+    }
+    public boolean isKeyPressedOnce(int keyCode){
+        return input.isKeyPressedOnce(keyCode);
     }
 }
