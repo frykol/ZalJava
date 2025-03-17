@@ -11,14 +11,15 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 public class Player extends Entity{
     private Camera camera;
 
-    public Player(Scene scene, Vector3f position) {
-        super(scene, position);
+    public Player(String sceneHandle, Vector3f position) {
+        super(sceneHandle, position);
         initPlayer();
     }
     private void initPlayer(){
         camera = new Camera(1);
     }
-    public void update(Window window, Scene scene){
+    @Override
+    public void update(Window window){
 
         if (window.isKeyPressed(GLFW_KEY_W)) {
             position.add(camera.getCameraFront());
@@ -41,7 +42,10 @@ public class Player extends Entity{
         }
 
         if(window.isKeyPressedOnce(GLFW_KEY_F)){
-            new Cube(scene, ResourceManager.getTexture("brick"), position, new Vector3f(1.0f, 0.2f, 0.0f));
+            Vector3f pos = new Vector3f(position.x, position.y, position.z);
+            Cube c = new Cube(sceneHandle, ResourceManager.getTexture("brick"),ResourceManager.getShader("basicLight"), pos, new Vector3f(1.0f, 0.2f, 0.0f));
+            //SceneManager.getCurrentScene().addEntity(c);
+            SceneManager.getScene(sceneHandle).addEntity(c);
         }
         camera.setPosition(position);
         camera.update(window);

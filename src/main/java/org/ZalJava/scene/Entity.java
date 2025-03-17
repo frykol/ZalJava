@@ -1,7 +1,9 @@
 package org.ZalJava.scene;
 
+import org.ZalJava.core.Shader;
 import org.ZalJava.core.Texture;
 import org.ZalJava.core.VAO;
+import org.ZalJava.core.Window;
 import org.joml.Matrix4f;
 
 import org.joml.Vector3f;
@@ -9,34 +11,38 @@ import org.joml.Vector3f;
 
 public abstract class Entity {
     private int id;
+    protected String sceneHandle;
     private VAO vao = null;
+    private Shader shader = null;
     private Matrix4f modelMatrix;
     private Texture texture;
     protected Vector3f position;
     private Vector3f color;
     private float scale = 1.0f;
 
-    public Entity(Scene scene, Vector3f position){
+    public Entity(String sceneHandle, Vector3f position){
+        this.sceneHandle = sceneHandle;
         this.position = position;
         setupModelMatrix();
-        scene.addEntity(this);
     }
 
-    public Entity(Scene scene,VAO vao, Texture texture, Vector3f position, Vector3f color) {
+    public Entity(String sceneHandle,VAO vao, Texture texture, Shader shader, Vector3f position, Vector3f color) {
+        this.sceneHandle = sceneHandle;
         this.vao = vao;
         this.texture = texture;
+        this.shader = shader;
         this.position = position;
         this.color = color;
         setupModelMatrix();
-        scene.addEntity(this);
     }
 
-    public Entity(Scene scene,Texture texture, Vector3f position,Vector3f color) {
+    public Entity(String sceneHandle,Texture texture, Shader shader, Vector3f position,Vector3f color) {
+        this.sceneHandle = sceneHandle;
         this.texture = texture;
+        this.shader = shader;
         this.position = position;
         this.color = color;
         setupModelMatrix();
-        scene.addEntity(this);
     }
 
     private void setupModelMatrix() {
@@ -73,6 +79,13 @@ public abstract class Entity {
     public void setTexture(Texture texture) {
         this.texture = texture;
     }
+    public Shader getShader() {
+        return shader;
+    }
+    public void setShader(Shader shader) {
+        this.shader = shader;
+    }
+
     public Vector3f getPosition() {
         return position;
     }
@@ -96,6 +109,22 @@ public abstract class Entity {
     }
     public int getId() {
         return id;
+    }
+
+    public void update(Window window) {}
+
+    @Override
+    public String toString(){
+        String shaderString;
+        String textureString;
+        try{
+            shaderString = shader.toString();
+            textureString = texture.toString();
+        }catch (Exception e){
+            shaderString = "null";
+            textureString = "null";
+        }
+        return this.getClass().getSimpleName() + " " + shaderString + " " + textureString + " " + position.x + " " + position.y + " " + position.z + " " + color.x + " " + color.y + " " + color.z + " " + scale;
     }
 
 }

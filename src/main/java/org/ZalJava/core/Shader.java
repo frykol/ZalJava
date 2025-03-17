@@ -18,10 +18,12 @@ public class Shader {
     private int shaderProgram;
     private int statusCode = 0;
 
+    private final String name;
     private final String vertexShader;
     private final String fragmentShader;
 
-    public Shader(String vertexFile, String fragmentFile) {
+    public Shader(String name, String vertexFile, String fragmentFile) {
+        this.name = name;
         this.vertexShader = vertexFile;
         this.fragmentShader = fragmentFile;
     }
@@ -94,7 +96,7 @@ public class Shader {
         GL30.glUseProgram(shaderProgram);
     }
 
-    void unBind(){
+    public void unBind(){
         GL30.glUseProgram(0);
     }
 
@@ -120,5 +122,10 @@ public class Shader {
             shader.append(scanner.nextLine()).append("\n");
         }
         return shader;
+    }
+
+    @Override
+    public String toString(){
+        return name;
     }
 }

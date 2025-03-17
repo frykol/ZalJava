@@ -2,9 +2,12 @@
 
 layout (location = 0) in vec3 pos;
 layout (location = 1) in vec2 tex;
+layout (location = 2) in vec3 normalPos;
 
 
 out vec2 texCoord;
+out vec3 Normal;
+out vec3 FragPos;
 
 uniform mat4 u_Projection;
 uniform mat4 u_Model;
@@ -13,4 +16,6 @@ uniform mat4 u_View;
 void main(void){
     gl_Position = u_Projection * u_View * u_Model * vec4(pos.xyz, 1.0);
     texCoord = tex;
+    Normal = mat3(transpose(inverse(u_Model))) * normalPos;
+    FragPos = vec3(u_Model * vec4(pos, 1.0));
 }

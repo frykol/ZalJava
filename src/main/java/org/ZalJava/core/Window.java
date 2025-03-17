@@ -1,5 +1,6 @@
 package org.ZalJava.core;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -18,6 +19,7 @@ public class Window {
     private int width, height;
 
     private Input input;
+    private Matrix4f projectionMatrix;
 
     private double mouseX, mouseY;
 
@@ -86,7 +88,11 @@ public class Window {
         glfwShowWindow(window);
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+        float FOV = (float) Math.toRadians(60.0f);
+        projectionMatrix = new Matrix4f();
+        projectionMatrix.setPerspective(FOV, (float)1280/720, 0.01f, 1000.0f);
     }
 
     public void destroyWindow(){
@@ -109,6 +115,10 @@ public class Window {
     }
     public double getMouseY(){
         return mouseY;
+    }
+
+    public Matrix4f getProjectionMatrix(){
+        return projectionMatrix;
     }
 
     public void setWindow(int width, int height) {

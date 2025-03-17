@@ -18,11 +18,14 @@ public class Texture {
     private int width;
     private int height;
     private int numberOfChannels;
-    String textureName;
+    private final String name;
+    private String textureName;
 
     private int status = 0;
 
-    public Texture(String textureName){
+    public Texture(String name, String textureName)
+    {
+        this.name = name;
         this.textureName = textureName;
     }
 
@@ -54,13 +57,15 @@ public class Texture {
 
         String s;
         try {
-            s = Objects.requireNonNull(Main.class.getClassLoader().getResource(textureName)).getPath().substring(1);
+            s = Objects.requireNonNull(Main.class.getClassLoader().getResource(textureName)).getPath();
+            if(s.charAt(1) == 'C'){
+                s = s.substring(1);
+            }
         }catch (NullPointerException e){
             System.out.println("Texture '" + textureName + "' not found");
             status = -1;
             return;
         }
-        System.out.println(s);
 
         ByteBuffer buf = stbi_load(s, w, h, channels, 4);
         if(buf == null) {
@@ -92,4 +97,8 @@ public class Texture {
         GL30.glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    @Override
+    public String toString(){
+        return name;
+    }
 }
